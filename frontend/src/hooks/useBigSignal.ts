@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-class BigSignal<T extends Record<string, any>> {
+type BigSignal<T extends Record<string, any>> = T & BigSignalClass<T>
+
+class BigSignalClass<T extends Record<string, any>> {
   [key: string]: any
   set(newState: T) {
     for (const key in this) {
@@ -22,7 +24,7 @@ function isObj(obj: object): boolean {
 
 export default function useBigSignal<T extends Record<string, any>>(initialState: T): BigSignal<T> {
   if (!isObj(initialState)) throw new Error('useBigSignal only accepts objects as an argument')
-  const obj = new BigSignal<T>()
+  const obj = new BigSignalClass<T>()
   for (const key in initialState) {
     if (initialState.hasOwnProperty(key)) {
       if (isObj(initialState[key])) {
@@ -48,5 +50,5 @@ export default function useBigSignal<T extends Record<string, any>>(initialState
       })
     }
   }
-  return obj
+  return obj as BigSignal<T>
 }
